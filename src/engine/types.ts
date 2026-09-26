@@ -51,3 +51,17 @@ export const CATEGORIES: Category[] = ["HOBBY", "MEMORY", "IF", "VALUES", "LOVE"
 export const DEPTHS: Depth[] = [1, 2, 3];
 export const opponent = (p: Player): Player => (p === "BLACK" ? "WHITE" : "BLACK");
 export type Rng = () => number;
+
+export type GameState = {
+  screen: Screen;
+  board: Disc[][]; // 8x8
+  questions: Record<string, CellQuestion>; // key(pos) → 60件
+  current: Player;
+  phase: TurnPhase;
+  selected: Pos | null;
+  pendingFlips: Pos[];
+  names: Record<Player, string>;
+  mode: Mode;
+  seating: Seating;
+  privilege: PrivilegeState | null;
+};
