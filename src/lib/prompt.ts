@@ -2,9 +2,15 @@ import { MODES, MODE_NOTES } from "@/engine/orders";
 import type { Mode } from "@/engine/types";
 import { CATEGORIES, DEPTHS } from "@/engine/types";
 
-export const SYSTEM_PROMPT = `あなたは、2人が仲良くなるための会話ゲーム用の質問を作る専門家です。
+// 外部AI（ChatGPT・Claude・Gemini など）に貼り付けて、インポート用のJSONを出力させるプロンプト。
+// 第8.2〜8.3節のプロンプトを1つの文章にまとめたもの。
+
+export const ROLE_PROMPT = `あなたは、2人が仲良くなるための会話ゲーム用の質問を作る専門家です。
 指定された注文表どおりの数・カテゴリ・深さで質問を作り、指定のJSONだけを出力します。
 楽しく、答えやすく、答えた後に会話が広がる質問を作ってください。`;
+
+/** 避けてほしい質問の最大件数 */
+export const AVOID_LIMIT = 120;
 
 export function orderLines(mode: Mode): string {
   const order = MODES[mode].order;
@@ -21,9 +27,11 @@ export function avoidList(avoid: readonly string[]): string {
   return avoid.length === 0 ? "（なし）" : avoid.map((t) => `- ${t}`).join("\n");
 }
 
-export function buildUserPrompt(mode: Mode, avoid: readonly string[]): string {
+export function buildExternalPrompt(mode: Mode, avoid: readonly string[]): string {
   const m = MODES[mode];
-  return `# ゲームの説明
+  return `${ROLE_PROMPT}
+
+# ゲームの説明
 2人が1台のスマホでオセロをします。石を置くたびにそのマスの質問に答え、答えられた時だけ相手の石を返せます。
 盤の中央ほど軽い質問、外側ほど深い質問が置かれ、ゲームが進むほど会話が深まります。
 
@@ -53,11 +61,11 @@ ${orderLines(mode)}
 3. 「はい／いいえ」だけで答え終わる質問にしない。理由やエピソードが出る形にする。
 4. 60問すべて違う内容にする。言い回しだけ違う似た質問も禁止。
 5. 次の内容は絶対に作らない：性的な内容、身体的特徴、収入や貯金の金額、病気・トラウマ・家族の不幸・被害経験、政治や宗教の立場、その場にいない特定の人の悪口。
-6. 次の質問は最近使ったので、同じ質問や似た質問は作らない：
-${avoidList(avoid)}
+6. 次の質問はすでに持っているので、同じ質問や似た質問は作らない：
+${avoidList(avoid.slice(-AVOID_LIMIT))}
 
 # 出力形式
-次の形のJSONだけを出力する。前後に説明文やコードブロック記号を付けない。
+次の形のJSONだけを出力する。前後に説明文を付けない（コピーしやすいようにコードブロックで囲むのはOK）。
 {"questions":[{"category":"HOBBY","depth":1,"text":"休みの日の朝、最初にしたいことは？"}]}
 - category は HOBBY / MEMORY / IF / VALUES / LOVE / YOU のどれか
 - depth は 1 / 2 / 3 の数値

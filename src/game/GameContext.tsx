@@ -18,7 +18,6 @@ export type GameViewModel = {
   state: Store;
   newGame: (names: Record<Player, string>, mode: Mode, seating: Seating) => void;
   reset: () => void;
-  retryLoading: () => void;
   questionsReady: (placed: Record<string, Question>) => void;
   onCellTap: (pos: Pos | null) => void;
   onConfirmPlace: () => void;
@@ -45,7 +44,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       state,
       newGame: (names, mode, seating) => d({ type: "NEW_GAME", names, mode, seating }),
       reset: () => d({ type: "RESET" }),
-      retryLoading: () => d({ type: "RETRY_LOADING" }),
       questionsReady: (placed) => d({ type: "QUESTIONS_READY", placed }),
       onCellTap: (pos) => d({ type: "CELL_TAP", pos }),
       onConfirmPlace: () => d({ type: "CONFIRM_PLACE" }),

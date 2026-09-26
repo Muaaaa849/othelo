@@ -13,20 +13,32 @@ npm run lint     # 型チェック
 npm run build
 ```
 
-## 環境変数（サーバーのみ）
+## 質問データ（設定 → 質問データ）
 
-| 変数 | 説明 |
-| --- | --- |
-| `ANTHROPIC_API_KEY` | 質問生成に使う。未設定なら内蔵質問バンクで遊べる |
-| `QUESTION_MODEL` | 既定値 `claude-haiku-4-5` |
+- **インポート**: JSON形式の `.txt` ファイルを選ぶか、テキストを貼り付けて取り込む。取り込んだ質問は localStorage に保存され、ゲームでは内蔵の質問より優先して使われる（足りない分は内蔵で補充）。
+- **エクスポート**: 「インポートした質問」または「すべての質問（内蔵＋インポート）」を同じ形式の `.txt` で保存。
+- **外部AI用プロンプト**: ふたりの関係を選ぶと、そのモードの注文表（60問）でJSONを出力させるプロンプトを表示・コピーできる。すでに持っている質問（直近使用＋インポート済み、最大120件）は避けるよう指示が入る。
 
-`.env.example` を `.env.local` にコピーして設定します。Vercel ではプロジェクトの環境変数に設定してください。
+形式:
+
+```json
+{"questions":[
+  {"category":"HOBBY","depth":1,"text":"休みの日の朝、最初にしたいことは？"}
+]}
+```
+
+- `category`: HOBBY / MEMORY / IF / VALUES / LOVE / YOU
+- `depth`: 1（かるめ）/ 2（ふかめ）/ 3（とっておき）
+- `text`: 40文字以内、末尾は「？」（半角 `?` は自動で置き換え）
+- 前後の文章やコードブロック記号があっても読める。形式に合わないもの・既存と同じ質問は取り込まない。
+
+AIによる自動生成は現在は外している（APIキー不要）。
 
 ## 構成
 
-- `src/engine/` — 純TypeScript のゲームロジック（合法手・返す石・質問配置・検証と補充）
+- `src/engine/` — 純TypeScript のゲームロジック（合法手・返す石・質問配置・検証と補充・インポート）
 - `src/game/` — 第7章の状態遷移（`useReducer` + Context）
-- `src/lib/` — プロンプト組み立て、サーバー専用の質問生成、localStorage ラッパー
+- `src/lib/` — 外部AI用プロンプト、localStorage ラッパー、ゲーム用の質問抽出
 - `src/data/questions_ja.json` — 内蔵質問バンク（オフライン・失敗時用）
-- `src/app/api/questions/route.ts` — 質問生成 API（APIキーはサーバー側のみ）
+- `src/app/questions/page.tsx` — 質問データ（インポート・エクスポート・外部AI用プロンプト）
 - `src/app/play/page.tsx` — S3〜S9 を1ページ内で切り替え

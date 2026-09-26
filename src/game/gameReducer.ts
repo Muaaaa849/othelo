@@ -20,7 +20,7 @@ export type AskItem = { text: string; category: Category | null; depth: 1 | 2 | 
 export type GameState = BaseGameState & {
   /** 直前の回答結果（ANIMATING 中のアニメ切り替えに使う） */
   lastOutcome: "ANSWERED" | "FAILED" | null;
-  /** 質問生成のやり直し回数（S3 の再試行トリガー） */
+  /** 新しいゲームごとに増える（S3 の質問づくりのトリガー） */
   loadId: number;
   ask: AskItem | null;
   /** 全員の特権が終わった */
@@ -29,7 +29,6 @@ export type GameState = BaseGameState & {
 
 export type Action =
   | { type: "NEW_GAME"; names: Record<Player, string>; mode: Mode; seating: Seating }
-  | { type: "RETRY_LOADING" }
   | { type: "QUESTIONS_READY"; placed: Record<string, Question> }
   | { type: "CELL_TAP"; pos: Pos | null }
   | { type: "CONFIRM_PLACE" }
@@ -121,8 +120,6 @@ export function gameReducer(s: GameState, a: Action): GameState {
       return createGame(a.names, a.mode, a.seating, s.loadId + 1);
     case "REMATCH":
       return createGame(s.names, s.mode, s.seating, s.loadId + 1);
-    case "RETRY_LOADING":
-      return s.screen === "LOADING" ? { ...s, loadId: s.loadId + 1 } : s;
 
     case "QUESTIONS_READY": {
       if (s.screen !== "LOADING") return s;

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
@@ -38,6 +39,13 @@ export default function SettingsPage() {
           <p className="mb-3 text-body font-bold">座り方の初期値</p>
           <SeatingToggle value={s.seating} onChange={(v) => update({ seating: v })} />
         </div>
+        <Link href="/questions" className="flex h-16 items-center justify-between rounded-2xl bg-board px-4 text-body font-bold">
+          <span>
+            質問データ
+            <span className="block text-note font-normal text-white/60">インポート・エクスポート・外部AI用プロンプト</span>
+          </span>
+          <span className="text-white/60">›</span>
+        </Link>
       </div>
     </main>
   );

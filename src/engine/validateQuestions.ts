@@ -68,13 +68,17 @@ export function validateRaw(
   return { questions: kept, shortage: 60 - kept.length, parsed: items !== null };
 }
 
-/** 第8.4節 手順6。不足分を内蔵バンクから補充して必ず60問にする。 */
+/**
+ * 第8.4節 手順6。不足分を補充して必ず60問にする。
+ * preferred（インポートした質問）を内蔵バンクより優先して使う。
+ */
 export function fillFromBank(
   kept: Question[],
   mode: Mode,
   avoid: readonly string[],
   bank: readonly Question[],
   rng: Rng,
+  preferred: readonly Question[] = [],
 ): Question[] {
   const order = MODES[mode].order;
   const avoidSet = new Set(avoid);
@@ -82,20 +86,20 @@ export function fillFromBank(
   const result = [...kept];
   for (const depth of DEPTHS) {
     for (const category of CATEGORIES) {
-      const need = order[depth][category] - kept.filter((q) => q.depth === depth && q.category === category).length;
+      let need = order[depth][category] - kept.filter((q) => q.depth === depth && q.category === category).length;
       if (need <= 0) continue;
-      const pool = bank.filter((q) => q.depth === depth && q.category === category && !used.has(q.text));
-      // 直近使用リストにないものを優先。足りなければ使用済みからも補う（必ず60問そろえるため）
-      const fresh = shuffle(pool.filter((q) => !avoidSet.has(q.text)), rng);
-      const stale = shuffle(pool.filter((q) => avoidSet.has(q.text)), rng);
-      const picks = [...fresh, ...stale].slice(0, need);
-      if (picks.length < need) {
-        throw new Error(`内蔵質問が不足しています: depth${depth}/${category}`);
-      }
-      for (const q of picks) {
+      const inSlot = (pool: readonly Question[]) => pool.filter((q) => q.depth === depth && q.category === category);
+      const fresh = (pool: readonly Question[]) => shuffle(inSlot(pool).filter((q) => !avoidSet.has(q.text)), rng);
+      const stale = (pool: readonly Question[]) => shuffle(inSlot(pool).filter((q) => avoidSet.has(q.text)), rng);
+      // 直近使用リストにないもの（インポート → 内蔵）を優先。足りなければ使用済みからも補う（必ず60問そろえるため）
+      for (const q of [...fresh(preferred), ...fresh(bank), ...stale(preferred), ...stale(bank)]) {
+        if (need === 0) break;
+        if (used.has(q.text)) continue;
         used.add(q.text);
         result.push({ category: q.category, depth: q.depth, text: q.text });
+        need--;
       }
+      if (need > 0) throw new Error(`内蔵質問が不足しています: depth${depth}/${category}`);
     }
   }
   return result;
@@ -112,12 +116,13 @@ export function validateAndFill(
   return { questions: fillFromBank(questions, mode, avoid, bank, rng), shortage };
 }
 
-/** 内蔵バンクだけで60問を作る */
+/** 内蔵バンク（＋インポートした質問）だけで60問を作る */
 export function questionsFromBank(
   mode: Mode,
   avoid: readonly string[],
   bank: readonly Question[],
   rng: Rng,
+  preferred: readonly Question[] = [],
 ): Question[] {
-  return fillFromBank([], mode, avoid, bank, rng);
+  return fillFromBank([], mode, avoid, bank, rng, preferred);
 }

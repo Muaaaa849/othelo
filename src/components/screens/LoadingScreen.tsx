@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { CATEGORIES } from "@/engine/types";
 import { CATEGORY_META } from "@/lib/categories";
-import { Button } from "../Button";
 
 const HINTS = ["盤の外側ほど、質問が深くなるよ", "角の質問は“とっておき”", "答えられないと、石は置けずに相手の番"];
 
@@ -24,34 +23,12 @@ export function FlippingDiscs({ size = 28 }: { size?: number }) {
   );
 }
 
-export function LoadingScreen({
-  error,
-  onRetry,
-  onUseBank,
-}: {
-  error: boolean;
-  onRetry: () => void;
-  onUseBank: () => void;
-}) {
+export function LoadingScreen() {
   const [hint, setHint] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setHint((h) => (h + 1) % HINTS.length), 3000);
     return () => clearInterval(t);
   }, []);
-
-  if (error) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
-        <p className="text-body font-bold">質問を作れませんでした</p>
-        <div className="flex w-full flex-col gap-3">
-          <Button onClick={onRetry}>もう一度</Button>
-          <Button variant="secondary" onClick={onUseBank}>
-            内蔵の質問で遊ぶ
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4">

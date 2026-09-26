@@ -1,9 +1,11 @@
-import type { Seating } from "@/engine/types";
+import type { Question, Seating } from "@/engine/types";
+import { normalizeQuestion } from "@/engine/validateQuestions";
 
 export type Settings = { sound: boolean; vibration: boolean; seating: Seating };
 
 const SETTINGS_KEY = "talkthello.settings";
 const RECENT_KEY = "talkthello.recent";
+const IMPORTED_KEY = "talkthello.imported";
 export const RECENT_LIMIT = 120;
 
 export const DEFAULT_SETTINGS: Settings = { sound: true, vibration: true, seating: "SIDE_BY_SIDE" };
@@ -44,4 +46,21 @@ export function addRecent(texts: string[]) {
   const set = new Set(texts);
   const merged = [...loadRecent().filter((t) => !set.has(t)), ...texts];
   write(RECENT_KEY, merged.slice(-RECENT_LIMIT));
+}
+
+/** インポートした質問 */
+export function loadImported(): Question[] {
+  const r = read<unknown>(IMPORTED_KEY);
+  if (!Array.isArray(r)) return [];
+  return r.map(normalizeQuestion).filter((q): q is Question => q !== null);
+}
+
+/** 保存できなければ false */
+export function saveImported(questions: Question[]): boolean {
+  try {
+    window.localStorage.setItem(IMPORTED_KEY, JSON.stringify(questions));
+    return true;
+  } catch {
+    return false;
+  }
 }

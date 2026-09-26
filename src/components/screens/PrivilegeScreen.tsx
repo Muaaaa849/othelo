@@ -6,13 +6,12 @@ import { CATEGORIES, opponent } from "@/engine/types";
 import type { GameViewModel } from "@/game/GameContext";
 import type { GameState } from "@/game/gameReducer";
 import { CATEGORY_META } from "@/lib/categories";
-import { fetchQuestions, localQuestions } from "@/lib/fetchQuestions";
+import { localQuestions } from "@/lib/localQuestions";
 import { loadRecent } from "@/lib/storage";
 import { Button } from "../Button";
 import { CategoryChip } from "../CategoryChip";
 import { Icon } from "../Icon";
 import { Stars } from "../Stars";
-import { FlippingDiscs } from "./LoadingScreen";
 
 export const CUSTOM_MAX = 60;
 
@@ -21,25 +20,15 @@ export function PrivilegeScreen({ vm, state }: { vm: GameViewModel; state: GameS
   const { names } = state;
   const asker = p.asker;
   const target = opponent(asker);
-  const [rerolling, setRerolling] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
   const [customText, setCustomText] = useState("");
 
-  const reroll = async () => {
-    if (p.rerollUsed || rerolling) return;
+  const reroll = () => {
+    if (p.rerollUsed) return;
     if (!window.confirm("今の一覧は消えて、新しい質問が並びます。リロールは1回だけです。")) return;
-    setRerolling(true);
     const current = Object.values(state.questions).map((cq) => cq.question.text);
-    const recent = loadRecent();
-    const avoid = [...recent.filter((t) => !current.includes(t)), ...current];
-    let qs;
-    try {
-      qs = await fetchQuestions(state.mode, avoid);
-    } catch {
-      qs = localQuestions(state.mode, avoid);
-    }
-    setRerolling(false);
-    vm.rerolled(qs);
+    const avoid = [...loadRecent().filter((t) => !current.includes(t)), ...current];
+    vm.rerolled(localQuestions(state.mode, avoid));
   };
 
   const groups = CATEGORIES.map((c) => ({
@@ -56,7 +45,7 @@ export function PrivilegeScreen({ vm, state }: { vm: GameViewModel; state: GameS
         </div>
         <button
           type="button"
-          disabled={p.rerollUsed || rerolling}
+          disabled={p.rerollUsed}
           onClick={reroll}
           className="h-12 shrink-0 rounded-2xl border-2 border-line px-3 text-note font-bold disabled:opacity-40"
         >
@@ -65,13 +54,7 @@ export function PrivilegeScreen({ vm, state }: { vm: GameViewModel; state: GameS
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 pb-4">
-        {rerolling ? (
-          <div className="flex h-full flex-col items-center justify-center gap-6">
-            <FlippingDiscs size={22} />
-            <p className="text-body">新しい質問を作っています…</p>
-          </div>
-        ) : (
-          <>
+        <>
             {groups.length === 0 && (
               <p className="py-6 text-center text-note text-white/60">開示された質問はありません</p>
             )}
@@ -100,12 +83,11 @@ export function PrivilegeScreen({ vm, state }: { vm: GameViewModel; state: GameS
             >
               <span className="text-gold">＋</span> 自分で質問を考える
             </button>
-          </>
-        )}
+        </>
       </div>
 
       <div className="shrink-0 px-4 pb-4 pt-2">
-        <Button disabled={p.selectedIndex === null || rerolling} onClick={vm.askSelected}>
+        <Button disabled={p.selectedIndex === null} onClick={vm.askSelected}>
           この質問にする
         </Button>
       </div>

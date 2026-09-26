@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { AskScreen } from "@/components/screens/AskScreen";
 import { GameScreen } from "@/components/screens/GameScreen";
 import { LoadingScreen } from "@/components/screens/LoadingScreen";
@@ -10,7 +10,7 @@ import { ResultScreen } from "@/components/screens/ResultScreen";
 import { placeQuestions } from "@/engine/placeQuestions";
 import type { Question } from "@/engine/types";
 import { useGame } from "@/game/GameContext";
-import { fetchQuestions, localQuestions } from "@/lib/fetchQuestions";
+import { localQuestions } from "@/lib/localQuestions";
 import { addRecent, loadRecent } from "@/lib/storage";
 
 const QUIT_MESSAGE = "ゲームを終了しますか？（進行は保存されません）";
@@ -20,7 +20,6 @@ export default function PlayPage() {
   const router = useRouter();
   const vm = useGame();
   const { state } = vm;
-  const [loadError, setLoadError] = useState(false);
   const screen = state?.screen;
 
   const goHome = useCallback(() => {
@@ -42,23 +41,10 @@ export default function PlayPage() {
     [state, vm],
   );
 
-  // S3: 質問づくり
+  // S3: 質問づくり（インポートした質問＋内蔵バンクから60問）
   useEffect(() => {
     if (!state || state.screen !== "LOADING") return;
-    const controller = new AbortController();
-    let cancelled = false;
-    setLoadError(false);
-    fetchQuestions(state.mode, loadRecent(), controller.signal)
-      .then((qs) => {
-        if (!cancelled) start(qs);
-      })
-      .catch(() => {
-        if (!cancelled) setLoadError(true);
-      });
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
+    start(localQuestions(state.mode, loadRecent()));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, state?.loadId]);
 
@@ -90,13 +76,7 @@ export default function PlayPage() {
 
   switch (state.screen) {
     case "LOADING":
-      return (
-        <LoadingScreen
-          error={loadError}
-          onRetry={vm.retryLoading}
-          onUseBank={() => start(localQuestions(state.mode, loadRecent()))}
-        />
-      );
+      return <LoadingScreen />;
     case "PLAYING":
       return (
         <GameScreen
