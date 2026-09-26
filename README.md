@@ -10,8 +10,34 @@ npm install
 npm run dev      # http://localhost:3000
 npm test         # src/engine などの単体テスト（Vitest）
 npm run lint     # 型チェック
-npm run build
+npm run build    # 静的サイトとして out/ に書き出す
 ```
+
+## スマホで遊ぶ
+
+サーバー処理がない静的サイトなので、どこにでも置けます。
+
+### A. GitHub Pages（おすすめ・無料）
+
+1. GitHub のリポジトリで **Settings → Pages → Build and deployment → Source** を **GitHub Actions** にする（最初の1回だけ）
+2. ブランチに push すると `.github/workflows/deploy-pages.yml` が自動でビルド・公開する（Actions タブから手動実行も可）
+3. スマホの Chrome / Safari で `https://<ユーザー名>.github.io/<リポジトリ名>/` を開く
+4. ホーム画面に追加すると全画面・縦固定のアプリとして起動する
+   - Android Chrome: 右上「⋮」→「ホーム画面に追加」または「アプリをインストール」
+   - iPhone Safari: 共有ボタン →「ホーム画面に追加」
+
+### B. Vercel / Netlify / Cloudflare Pages
+
+リポジトリを取り込むだけで動きます（ビルドコマンド `npm run build`、公開ディレクトリ `out`）。ルートで配信する場合は `NEXT_PUBLIC_BASE_PATH` は不要です。
+
+### C. 同じ Wi-Fi の PC から配信（お試し用）
+
+```bash
+npm run build
+cd out && python3 -m http.server 8080
+```
+
+スマホで `http://<PCのIPアドレス>:8080/` を開く。遊べるが HTTPS ではないため、「アプリとしてインストール」は使えない。
 
 ## 質問データ（設定 → 質問データ）
 

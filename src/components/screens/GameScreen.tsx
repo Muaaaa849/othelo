@@ -132,7 +132,7 @@ export function GameScreen({ vm, state, onQuit }: { vm: GameViewModel; state: Ga
       <PlayerPanel player="BLACK" name={names.BLACK} count={counts.black} active={current === "BLACK"} rotated={false} />
 
       {/* 最下部の操作バー */}
-      <div className="shrink-0 px-4 pb-4 pt-2" onClick={(e) => e.stopPropagation()}>
+      <div className="shrink-0 px-4 pb-3 pt-1.5" onClick={(e) => e.stopPropagation()}>
         {phase === "CELL_SELECTED" || phase === "QUESTION_SHOWN" ? (
           <Button onClick={confirmPlace} disabled={phase !== "CELL_SELECTED"}>
             ここに置く

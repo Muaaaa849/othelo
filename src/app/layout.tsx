@@ -6,7 +6,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: APP_TITLE,
   description: "答えなきゃ、ひっくり返せない。質問に答えて石を返す、2人で遊ぶ会話オセロ。",
-  appleWebApp: { capable: true, title: APP_TITLE, statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: APP_TITLE, statusBarStyle: "black" },
+  // iOS 16.3 以前の「ホーム画面に追加」で全画面起動させるため
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 export const viewport: Viewport = {

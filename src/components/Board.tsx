@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { legalMoves } from "@/engine/board";
 import type { Pos } from "@/engine/types";
 import { key } from "@/engine/types";
@@ -15,6 +15,7 @@ export const FLIP_DURATION_MS = 250;
 
 export function Board({ state, onCellTap }: { state: GameState; onCellTap: (pos: Pos | null) => void }) {
   const [peek, setPeek] = useState<string | null>(null);
+  const peekArmed = useRef(false);
   const { board, questions, current, phase, selected, pendingFlips, lastOutcome } = state;
 
   const legal = useMemo(() => {
@@ -41,7 +42,9 @@ export function Board({ state, onCellTap }: { state: GameState; onCellTap: (pos:
 
   const onLongPress = (k: string) => {
     if (phase === "QUESTION_SHOWN" || phase === "ANIMATING") return;
-    if (questions[k]) setPeek(k);
+    if (!questions[k]) return;
+    peekArmed.current = false;
+    setPeek(k);
   };
 
   return (
@@ -77,9 +80,11 @@ export function Board({ state, onCellTap }: { state: GameState; onCellTap: (pos:
       {peekText && (
         <div
           className="fixed inset-0 z-30"
+          // 長押しを離した時の click で閉じないよう、新しくタッチされてから閉じる
+          onPointerDown={() => (peekArmed.current = true)}
           onClick={(e) => {
             e.stopPropagation();
-            setPeek(null);
+            if (peekArmed.current) setPeek(null);
           }}
         >
           <div className="absolute left-1/2 top-1/3 w-[80%] max-w-[400px] -translate-x-1/2 rounded-2xl border border-line bg-card px-4 py-3 text-center text-body font-bold shadow-2xl">

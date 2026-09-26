@@ -15,7 +15,7 @@ export function PlayerPanel({
   rotated: boolean;
 }) {
   return (
-    <div className="px-4 py-1.5" style={{ transform: rotated ? "rotate(180deg)" : undefined }}>
+    <div className="px-4 py-1" style={{ transform: rotated ? "rotate(180deg)" : undefined }}>
       <div
         className="flex h-12 items-center gap-3 rounded-2xl bg-board px-3 transition-opacity"
         style={{
