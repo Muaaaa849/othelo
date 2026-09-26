@@ -1,0 +1,1159 @@
+{
+ "questions": [
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "休みの日の朝、最初にしたいことは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近ハマっているものは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな食べ物ベスト3は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "コンビニでつい買っちゃうものは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近リピートしてる曲は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな季節とその理由は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "何時間でも見ていられる動画のジャンルは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなお菓子と、その推しポイントは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "朝ごはんはパン派？ごはん派？その理由は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近買ってよかったものは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "休日は家派？外派？どんな過ごし方が好き？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな飲み物と、よく飲むシーンは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近見て面白かった映画やドラマは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "カラオケで歌う定番の曲は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "行ってみたい旅行先とその理由は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなラーメンの味と、推しの店は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "スマホで一番使ってるアプリは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "集めているもの、集めていたものは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなおにぎりの具は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "ついやってしまう暇つぶしは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな動物と、その好きなところは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "一番好きなお寿司のネタは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近ちょっと贅沢したことは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな色と、その色の持ち物は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "甘いものとしょっぱいもの、今食べたいのはどっち？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなキャラクターと、その魅力は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近始めてみたいと思っていることは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな番組やYouTubeチャンネルは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "雨の日の過ごし方でお気に入りは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなスポーツや、見るのが好きな競技は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "得意な料理や、よく作るものは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "ついつい長居しちゃうお店は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなパンの種類は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "推しの芸能人やアーティストは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな香りや匂いは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "夏と冬、好きなのはどっち？どうして？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "最近よく行く場所は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな麺類ランキングは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "休みが3日あったら何をする？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "朝型？夜型？一番元気な時間帯は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きな本や漫画を1冊おすすめするなら？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 1,
+   "text": "好きなゲームと、その面白さは？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "1日だけ透明人間になれたら何する？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "無人島に1つだけ持っていくなら？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "宝くじで1億円当たったら最初に何を買う？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "動物になれるとしたら何になりたい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "1つだけ超能力が使えるなら何がいい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "タイムマシンで過去と未来、行くならどっち？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "一生1つの食べ物しか食べられないなら何にする？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "魔法が1つ使えるなら、どんな魔法がいい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "好きな時代に住めるとしたら、いつがいい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "100万円を1日で使い切るなら何に使う？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "明日から1週間休みになったら何する？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "住む場所を自由に選べるならどこに住む？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "自分の名前を変えられるとしたら何にする？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "1日だけ誰かと入れ替われるなら誰がいい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "漫画やアニメの世界に行けるなら、どの作品？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "空を飛べたら最初にどこへ行く？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "もし猫と話せたら何を聞いてみたい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "家に1つだけ変わった部屋を作るなら？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "1日が30時間になったら増えた時間で何する？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "もしお店を開くなら、どんなお店にする？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "一生分タダになるなら何がいい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "ロボットを1台もらえるなら何をしてもらう？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "もし有名人になれるなら、何で有名になりたい？"
+  },
+  {
+   "category": "IF",
+   "depth": 1,
+   "text": "どこでもドアがあったら毎朝どこに行く？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "小学生の頃の夢は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "子どもの頃に好きだった遊びは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "給食で好きだったメニューは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "子どもの頃によく見ていたアニメは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "学生時代の部活や打ち込んだことは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "修学旅行で一番覚えていることは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "子どもの頃、好きだったおもちゃは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "初めて自分で買った大きな買い物は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "小さい頃の得意技やちょっとした特技は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "学生時代によく行った場所は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "小さい頃に怖かったものは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "昔ハマっていたけど、今はやめたことは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "子どもの頃の夏休みの思い出は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "初めて行ったライブやイベントは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "子どもの頃によく食べていたお菓子は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "学生時代のあだ名とその由来は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "一番古い記憶ってどんなこと？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "昔住んでいた町の好きだったところは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "子どもの頃、家族でよく行った場所は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "学校行事で一番好きだったのは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 1,
+   "text": "昔よく聴いていた思い出の曲は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "お金と時間、今欲しいのはどっち？どうして？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "一人の時間とみんなとの時間、どっちが好き？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "計画派？その場のノリ派？その理由は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "朝起きて一番に考えることは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "自分へのご褒美って何にしてる？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "友達を選ぶとき大事にしていることは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "気分を切り替えるときにすることは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "ついこだわっちゃうポイントは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "人に褒められてうれしいことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "最近ちょっと感動したことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "小さな幸せを感じる瞬間は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "ストレス解消法は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "つい応援したくなる人ってどんな人？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "休日に絶対やりたいことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 1,
+   "text": "自分のマイルールを1つ教えて？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "理想のデートプランは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "好きなタイプを3つのキーワードで言うと？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "デートで行ってみたい場所は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "恋愛映画やドラマで好きな作品は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "グッとくるしぐさは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "告白はする派？される派？その理由は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "デートで食べたいごはんは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "一緒にいて楽な人ってどんな人？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "恋人とやってみたい遊びは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "好きなラブソングは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "理想のプロポーズのシチュエーションは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "初デートで行くならどこがいい？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "恋人に言われたらうれしい言葉は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "記念日はどう過ごしたい？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 1,
+   "text": "好きな人の前でついやっちゃうことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手の第一印象を正直に教えて？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手に似合いそうな色は？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手を動物にたとえると何？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手の今日の服装のいいところは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手に似合いそうな職業は？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手と一緒に行ってみたい場所は？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手の声や話し方の印象は？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手に聞いてみたいことを1つ言うと？"
+  },
+  {
+   "category": "YOU",
+   "depth": 1,
+   "text": "相手が好きそうな食べ物を当てるなら？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "人生で一番ハマったものと、そのきっかけは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "趣味にかけた一番大きなお金と、その使い道は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "好きなことを仕事にしたいと思う？どうして？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "これだけは人に負けないと思う趣味は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "人におすすめしたいけど、なかなか伝わらない好きなものは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "今の趣味を始めたきっかけは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "好きなものについて語り出したら止まらない話題は？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "推しに出会ってから変わったことは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "一度やめたけど、また始めたいことは？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "自分の好きなものを馬鹿にされたらどう思う？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "時間もお金も気にせず打ち込めるなら何をする？"
+  },
+  {
+   "category": "HOBBY",
+   "depth": 2,
+   "text": "人生を変えた本や映画、作品は？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "人生をもう一度やり直せるなら、どこからやり直す？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "10年後の自分に手紙を書くなら何を書く？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "明日で世界が終わるなら、最後の日に何をする？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "過去の自分に1つだけアドバイスできるなら？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "記憶を1つだけ消せるなら、どの記憶を消す？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "別の人生を選べるとしたら、どんな人生にする？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "100歳まで生きるとしたら、何歳が一番楽しそう？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "自分のクローンがいたら、何を任せたい？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "仕事をしなくていいなら、毎日何をして過ごす？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "1年間だけ別の国に住むならどこでどう暮らす？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "もう一度学生に戻れたら何をしたい？"
+  },
+  {
+   "category": "IF",
+   "depth": 2,
+   "text": "自分の人生を映画にするならタイトルは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "今までで一番の失敗談は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "人生で一番うれしかった瞬間は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "一番がんばったなと思う時期はいつ？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "今でも忘れられない誰かの一言は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "人生の転機になった出来事は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "子どもの頃の自分に今の自分を見せたらどう思う？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "一番泣いた映画や本とその理由は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "昔の自分がやらかした恥ずかしい話は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "学生時代に戻ったらやり直したいことは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "一番印象に残っている旅行の思い出は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "誰かに救われたなと思った経験は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "親や先生に怒られて一番覚えていることは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "初めて自分で決めた大きな決断は？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "昔の自分と今の自分で一番変わったところは？"
+  },
+  {
+   "category": "MEMORY",
+   "depth": 2,
+   "text": "一番緊張した瞬間とそのときの気持ちは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "人生で一番大事にしたいことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "これだけは許せないってことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "尊敬している人と、その理由は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "自分の性格で好きなところと苦手なところは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "仕事で大事にしていることは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "幸せってどんなときに感じる？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "人に言われて考え方が変わった言葉は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "自分の中で絶対に曲げたくないことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "理想の休日と理想の人生、共通点はある？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "お金で買えないもので一番大事なものは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "友達とケンカしたとき、どうやって仲直りする？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "10年後、どんな自分になっていたい？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "自分を一言で表すとしたら何？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "嫌なことがあった日の立ち直り方は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "人に頼るのは得意？苦手？どうして？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "最近、自分の中で変わった考え方は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "年を取るのは楽しみ？不安？その理由は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 2,
+   "text": "自分にとって「成功」ってどんな状態？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人に求める一番大事なことは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋愛で一番ドキッとした瞬間は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "好きになる人に共通していることは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋愛でこれだけは譲れないことは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "理想の夫婦像やカップル像は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "ケンカしたとき、どう仲直りしたい？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人とは毎日連絡したい派？どうして？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人にされてうれしかったことは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋愛と友情、どっちを優先しちゃうタイプ？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "結婚についてどう考えてる？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "好きな人にどうやってアピールする？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人の嫉妬はどこまでならうれしい？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋愛で失敗したなと思う経験は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "長く付き合える人ってどんな人だと思う？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "一目ぼれってしたことある？そのときの話は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人と一緒に叶えたい夢は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人と過ごす理想の1日は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋愛で自分が変わったなと思ったことは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋人の「ここだけは直して」ってどこまで言える？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "恋愛で大事なのは話し合い？雰囲気？どうして？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 2,
+   "text": "好きな人の意外な一面を見たらどう思う？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手のどんなところが話しやすいと思う？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手と今日話して意外だったことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手の笑顔を見て思ったことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手とどんなことを一緒にやってみたい？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手にありがとうって言いたいことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手の「ここがすごい」と思うところは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手が主人公の映画を作るならどんな話？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手に似合いそうな趣味をすすめるなら？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手のことで、もっと知りたいと思ったことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手と友達になれそうだと思った瞬間は？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手の話で一番印象に残ったことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 2,
+   "text": "相手に向いてそうな休日の過ごし方は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 3,
+   "text": "人生で一番後悔していることと、そこから学んだことは？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 3,
+   "text": "自分の中でまだ誰にも言っていない目標は？"
+  },
+  {
+   "category": "VALUES",
+   "depth": 3,
+   "text": "本当はもっと認めてほしいと思っていることは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 3,
+   "text": "今までの恋愛で一番自分を変えた経験は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 3,
+   "text": "恋愛で本当は怖いと思っていることは？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 3,
+   "text": "好きな人にだけ見せる自分の一面は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 3,
+   "text": "恋人に一番言ってほしい言葉とその理由は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 3,
+   "text": "恋愛で本音を言えなかった瞬間は？"
+  },
+  {
+   "category": "LOVE",
+   "depth": 3,
+   "text": "これから恋人とどんな関係を築いていきたい？"
+  },
+  {
+   "category": "YOU",
+   "depth": 3,
+   "text": "相手に今日一番伝えたいことは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 3,
+   "text": "相手の本当はすごいと思っているところは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 3,
+   "text": "相手と出会えてよかったと思う理由は？"
+  },
+  {
+   "category": "YOU",
+   "depth": 3,
+   "text": "相手に言えていなかった本音を1つ教えて？"
+  },
+  {
+   "category": "YOU",
+   "depth": 3,
+   "text": "相手にこれからも変わらないでほしいところは？"
+  },
+  {
+   "category": "YOU",
+   "depth": 3,
+   "text": "相手のために自分ができることは何だと思う？"
+  }
+ ]
+}
