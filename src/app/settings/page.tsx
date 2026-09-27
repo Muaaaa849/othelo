@@ -46,6 +46,13 @@ export default function SettingsPage() {
           </span>
           <span className="text-white/60">›</span>
         </Link>
+        <Link href="/link" className="flex h-16 items-center justify-between rounded-2xl bg-board px-4 text-body font-bold">
+          <span>
+            2台接続テスト（実験）
+            <span className="block text-note font-normal text-white/60">近くの人のスマホと直接つながるか試す</span>
+          </span>
+          <span className="text-white/60">›</span>
+        </Link>
       </div>
     </main>
   );
