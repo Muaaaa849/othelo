@@ -1,0 +1,572 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>GitHub Pages + WebRTC 近接対戦 通信構成ガイド</title>
+<style>
+@page { size: A4; margin: 16mm 15mm 18mm; }
+* { box-sizing: border-box; }
+body { font-family: "IPAPGothic","IPAGothic",sans-serif; font-size: 10pt; line-height: 1.65; color: #1b1f27; }
+h1 { font-size: 21pt; margin: 0 0 4px; }
+h2 { font-size: 14pt; border-left: 5px solid #C99A1C; padding-left: 8px; margin: 22px 0 8px; break-after: avoid; }
+h3 { font-size: 11pt; margin: 14px 0 4px; break-after: avoid; }
+p { margin: 4px 0 8px; }
+.sub { color: #555; font-size: 10pt; }
+.box { background: #f6f3ea; border: 1px solid #e3dac2; border-radius: 6px; padding: 8px 12px; margin: 8px 0; }
+.warn { background: #fdf0f0; border-color: #efc9c9; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 9pt; break-inside: avoid; }
+th, td { border: 1px solid #cfd4dc; padding: 4px 6px; vertical-align: top; text-align: left; }
+th { background: #eef1f5; }
+.ok { color: #1d7a3e; font-weight: bold; } .ng { color: #b3261e; font-weight: bold; } .mid { color: #9a6a00; font-weight: bold; }
+pre.code { font-family: "IPAGothic", monospace; font-size: 7.6pt; line-height: 1.4; background: #f4f5f7; border: 1px solid #dde1e7; border-radius: 4px; padding: 6px 8px; white-space: pre-wrap; word-break: break-all; margin: 6px 0 10px; }
+code { font-family: "IPAGothic", monospace; background: #f1f2f4; padding: 0 3px; border-radius: 3px; font-size: 9pt; }
+.fig { text-align: center; margin: 8px 0 12px; break-inside: avoid; }
+.fig figcaption { font-size: 8.5pt; color: #666; }
+.page-break { break-before: page; }
+ol, ul { margin: 4px 0 8px; padding-left: 20px; }
+.toc li { margin: 1px 0; }
+</style></head><body>
+
+<h1>GitHub Pages + WebRTC 近接対戦 通信構成ガイド</h1>
+<p class="sub">サーバーなしで「近くにいる人のスマホ同士」をつなぐ Web ゲームの作り方 ― トークセロで実装・検証した構成を、他のゲーム／リポジトリに流用できる形でまとめたもの<br>2026年9月27日 ・ 参照実装: github.com/Muaaaa849/othelo（<code>src/lib/p2p/</code>, <code>/link/</code> ページ）</p>
+
+<div class="box"><b>要点（1分で）</b>
+<ul>
+<li>アプリは<b>静的サイト</b>として GitHub Pages で配信（HTTPS・無料）。ゲームのサーバーは持たない。</li>
+<li>スマホ同士は <b>WebRTC DataChannel</b> で直接通信。つなぐための情報（SDP）は圧縮して <b>QRコードを2回読み合う</b>だけで交換する（シグナリングサーバー不要）。</li>
+<li><b>Bluetooth は Web では使えない</b>（Web Bluetooth は接続しに行く側のみ・iPhone非対応）。</li>
+<li>同じ Wi‑Fi かテザリングなら確実。別回線どうしは STUN でつながることが多いが保証はない（確実にするなら TURN）。</li>
+<li>流用に必要なのは <b>TypeScript 2ファイル（約180行）＋ npm 2つ（<code>qrcode</code>, <code>jsqr</code>）</b>。フレームワーク非依存。</li>
+</ul></div>
+
+<ol class="toc">
+<li>全体構成</li><li>なぜこの構成か（方式の比較）</li><li>接続の流れ</li><li>接続コードの形式</li><li>ネットワーク条件とつながりやすさ</li>
+<li>別リポジトリへの流用手順</li><li>API リファレンス</li><li>ゲーム通信の設計パターン</li><li>検証結果</li><li>制約・拡張のしかた</li><li>付録（全ソース・ワークフロー）</li></ol>
+
+<h2>1. 全体構成</h2>
+<div class="fig">
+<svg width="660" height="250" viewBox="0 0 660 250" font-family="IPAPGothic" font-size="12">
+ <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#555"/></marker>
+ <marker id="g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#C99A1C"/></marker></defs>
+ <rect x="230" y="8" width="200" height="54" rx="8" fill="#eef1f5" stroke="#8a93a3"/>
+ <text x="330" y="30" text-anchor="middle" font-weight="bold">GitHub Pages（静的配信）</text>
+ <text x="330" y="49" text-anchor="middle" font-size="10.5">HTML / JS / CSS のみ・HTTPS</text>
+ <rect x="470" y="8" width="175" height="54" rx="8" fill="#fff" stroke="#8a93a3" stroke-dasharray="4 3"/>
+ <text x="557" y="30" text-anchor="middle" font-weight="bold">STUN（任意）</text>
+ <text x="557" y="49" text-anchor="middle" font-size="10.5">stun.l.google.com:19302</text>
+ <rect x="20" y="150" width="180" height="80" rx="12" fill="#fff" stroke="#1b1f27" stroke-width="1.5"/>
+ <text x="110" y="178" text-anchor="middle" font-weight="bold">スマホA（ホスト）</text>
+ <text x="110" y="198" text-anchor="middle" font-size="10.5">ブラウザ / PWA</text><text x="110" y="215" text-anchor="middle" font-size="10.5">ゲーム状態を持つ</text>
+ <rect x="460" y="150" width="180" height="80" rx="12" fill="#fff" stroke="#1b1f27" stroke-width="1.5"/>
+ <text x="550" y="178" text-anchor="middle" font-weight="bold">スマホB（ゲスト）</text>
+ <text x="550" y="198" text-anchor="middle" font-size="10.5">ブラウザ / PWA</text><text x="550" y="215" text-anchor="middle" font-size="10.5">操作を送る・画面を描く</text>
+ <line x1="280" y1="62" x2="140" y2="148" stroke="#555" marker-end="url(#a)"/><line x1="380" y1="62" x2="520" y2="148" stroke="#555" marker-end="url(#a)"/>
+ <text x="175" y="100" font-size="10.5" fill="#555">① ページを読み込む（最初だけ）</text>
+ <line x1="200" y1="175" x2="458" y2="175" stroke="#C99A1C" stroke-width="2" marker-end="url(#g)" stroke-dasharray="6 4"/>
+ <line x1="458" y1="188" x2="202" y2="188" stroke="#C99A1C" stroke-width="2" marker-end="url(#g)" stroke-dasharray="6 4"/>
+ <text x="330" y="168" text-anchor="middle" font-size="10.5" fill="#9a6a00">② QRコードを2回読み合う（接続情報の交換）</text>
+ <line x1="200" y1="215" x2="458" y2="215" stroke="#1d7a3e" stroke-width="3" marker-end="url(#a)"/>
+ <line x1="458" y1="215" x2="202" y2="215" stroke="#1d7a3e" stroke-width="3" marker-end="url(#a)"/>
+ <text x="330" y="240" text-anchor="middle" font-size="10.5" fill="#1d7a3e" font-weight="bold">③ WebRTC DataChannel で直接通信（暗号化・サーバー経由なし）</text>
+ <line x1="470" y1="50" x2="205" y2="150" stroke="#8a93a3" stroke-dasharray="3 3"/><line x1="560" y1="62" x2="560" y2="148" stroke="#8a93a3" stroke-dasharray="3 3"/>
+ <text x="600" y="110" font-size="10" fill="#666" text-anchor="middle">自分の外向き</text><text x="600" y="123" font-size="10" fill="#666" text-anchor="middle">アドレス確認</text>
+</svg>
+<figcaption>図1 構成要素。ゲーム中にサーバーが関わるのは、STUN による自分のアドレス確認（任意）だけ。</figcaption></div>
+
+<table><tr><th style="width:22%">要素</th><th>役割</th><th style="width:28%">この構成での実体</th></tr>
+<tr><td>静的ホスティング</td><td>アプリ本体（HTML/JS）を配る。HTTPS 必須（カメラ・一部APIのため）。</td><td>GitHub Pages ＋ GitHub Actions（自動公開）</td></tr>
+<tr><td>シグナリング</td><td>WebRTC 接続前に、互いの接続情報（SDP・ICE候補）を渡す。</td><td>QRコード（カメラで読む）／予備にテキストのコピペ</td></tr>
+<tr><td>NAT 越え補助</td><td>別回線どうしのとき、外から見た自分のアドレスを知る。</td><td>公開STUN（無料）。同じWi‑Fiなら不要</td></tr>
+<tr><td>データ通信</td><td>ゲームの操作・状態を送る。順序保証・再送あり・暗号化（DTLS）。</td><td>RTCDataChannel（ordered: true）、JSON</td></tr>
+</table>
+
+<h2>2. なぜこの構成か（方式の比較）</h2>
+<table><tr><th>方式</th><th>Android</th><th>iPhone</th><th>サーバー</th><th>評価</th></tr>
+<tr><td><b>WebRTC ＋ QRシグナリング</b>（本書）</td><td class="ok">○</td><td class="ok">○</td><td>不要（STUNのみ任意）</td><td class="ok">採用。静的サイトのまま動く</td></tr>
+<tr><td>Web Bluetooth</td><td class="mid">接続しに行く側のみ</td><td class="ng">非対応</td><td>不要</td><td class="ng">スマホ同士は不可（どちらも待ち受け・広告ができない）</td></tr>
+<tr><td>WebRTC ＋ シグナリングサーバー（PeerJS 公開サーバー、Firebase 等）</td><td class="ok">○</td><td class="ok">○</td><td>必要（無料枠あり）</td><td class="mid">部屋コード入力だけで楽。外部サービスに依存</td></tr>
+<tr><td>WebSocket でサーバー中継（Firebase / Supabase / PartyKit 等）</td><td class="ok">○</td><td class="ok">○</td><td>必要</td><td class="mid">遠隔対戦も確実。常時サーバー経由・アカウント管理が必要</td></tr>
+<tr><td>ネイティブアプリ（Nearby Connections / MultipeerConnectivity）</td><td class="ok">○</td><td class="ok">○</td><td>不要</td><td class="mid">Bluetooth 可。ただし Android⇔iPhone 間は困難・ストア配布が必要</td></tr>
+<tr><td>Web NFC</td><td class="mid">一部</td><td class="ng">非対応</td><td>不要</td><td class="ng">数百バイトを一瞬渡すだけ。対戦通信には使えない</td></tr>
+</table>
+
+<h2>3. 接続の流れ</h2>
+<div class="fig">
+<svg width="660" height="300" viewBox="0 0 660 300" font-family="IPAPGothic" font-size="11">
+ <defs><marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#333"/></marker></defs>
+ <rect x="60" y="6" width="160" height="28" rx="6" fill="#eef1f5" stroke="#8a93a3"/><text x="140" y="25" text-anchor="middle" font-weight="bold">ホスト（A）</text>
+ <rect x="440" y="6" width="160" height="28" rx="6" fill="#eef1f5" stroke="#8a93a3"/><text x="520" y="25" text-anchor="middle" font-weight="bold">ゲスト（B）</text>
+ <line x1="140" y1="34" x2="140" y2="295" stroke="#aaa"/><line x1="520" y1="34" x2="520" y2="295" stroke="#aaa"/>
+ <rect x="20" y="46" width="240" height="40" rx="4" fill="#fff" stroke="#ccc"/><text x="30" y="62">createDataChannel → createOffer</text><text x="30" y="78">ICE候補の収集完了を待つ（最大4秒）</text>
+ <rect x="20" y="92" width="240" height="22" rx="4" fill="#fff8e6" stroke="#e3c46f"/><text x="30" y="107">接続コード①（offer）を QR 表示</text>
+ <line x1="140" y1="125" x2="518" y2="125" stroke="#333" marker-end="url(#b)" stroke-dasharray="5 3"/><text x="330" y="120" text-anchor="middle">カメラで読む（約530文字）</text>
+ <rect x="400" y="134" width="240" height="40" rx="4" fill="#fff" stroke="#ccc"/><text x="410" y="150">setRemoteDescription(offer)</text><text x="410" y="166">createAnswer → 候補収集を待つ</text>
+ <rect x="400" y="180" width="240" height="22" rx="4" fill="#fff8e6" stroke="#e3c46f"/><text x="410" y="195">接続コード②（answer）を QR 表示</text>
+ <line x1="520" y1="213" x2="142" y2="213" stroke="#333" marker-end="url(#b)" stroke-dasharray="5 3"/><text x="330" y="208" text-anchor="middle">カメラで読む</text>
+ <rect x="20" y="222" width="240" height="22" rx="4" fill="#fff" stroke="#ccc"/><text x="30" y="237">setRemoteDescription(answer)</text>
+ <line x1="142" y1="262" x2="518" y2="262" stroke="#1d7a3e" stroke-width="2.5" marker-end="url(#b)"/><line x1="518" y1="270" x2="142" y2="270" stroke="#1d7a3e" stroke-width="2.5" marker-end="url(#b)"/>
+ <text x="330" y="256" text-anchor="middle" fill="#1d7a3e" font-weight="bold">ICE 接続確認 → DTLS → DataChannel open（両方で onOpen）</text>
+ <text x="330" y="290" text-anchor="middle" fill="#555">以後は peer.send(JSON) で双方向に送受信</text>
+</svg><figcaption>図2 接続シーケンス。ICE候補は trickle せず、全部そろえてから1回のコードで渡す（QRを2回読むだけで済む）。</figcaption></div>
+<ul>
+<li><b>ホスト＝最初にQRを見せる側</b>、ゲスト＝読む側。ゲームの親（状態を持つ側）もホストにすると設計が単純になる（8章）。</li>
+<li>候補収集の待ちは最大4秒。STUN に届かない環境では毎回4秒待つ（同じWi‑Fiではそれでもつながる）。</li>
+<li>QRが読めない時のために、同じ文字列をテキストでコピー／貼り付けできる逃げ道を必ず用意する。</li>
+</ul>
+
+<h2>4. 接続コードの形式</h2>
+<table><tr><th style="width:24%">項目</th><th>内容</th></tr>
+<tr><td>形式</td><td><code>"TS1." + base64url( deflate-raw( JSON { t: "o"|"a", s: SDP } ) )</code>（<code>TS1</code> はバージョン。互換性のない変更時は <code>TS2</code> に上げる）</td></tr>
+<tr><td>SDP の軽量化</td><td>DataChannel だけの接続に不要な <code>a=extmap-allow-mixed</code> / <code>a=msid-semantic</code> / <code>a=max-message-size</code> 行を削除</td></tr>
+<tr><td>圧縮</td><td>ブラウザ標準の <code>CompressionStream("deflate-raw")</code>（Chrome 80+ / Safari 16.4+ / Node 18+）。ライブラリ不要</td></tr>
+<tr><td>サイズ（実測）</td><td>offer 約530文字・answer 約527文字 → QR（誤り訂正L）でバージョン20前後。画面幅いっぱいに表示すれば読める</td></tr>
+<tr><td>QR 表示／読取</td><td>表示 <code>qrcode</code>（toCanvas, errorCorrectionLevel "L", margin 2）／読取 <code>jsqr</code>（getUserMedia の背面カメラ映像を150msごとに解析）</td></tr>
+<tr><td>安全性</td><td>コードには接続用の一時的な鍵の指紋・ローカルアドレス（mDNSで匿名化済み）が入る。通信本体は DTLS で暗号化。コードを第三者に見せない運用で十分</td></tr>
+</table>
+<p>さらに小さくしたい場合は、SDP から必要な値（ufrag, pwd, fingerprint, 候補）だけを取り出して受信側で SDP を組み立て直す方式で、100バイト前後まで縮められる（参考: QWBP）。ただし実装が複雑になるため、本構成では「圧縮のみ」を採用した。</p>
+
+<h2>5. ネットワーク条件とつながりやすさ</h2>
+<table><tr><th style="width:34%">状況</th><th style="width:14%">見込み</th><th>理由・対策</th></tr>
+<tr><td>2台とも同じ家庭用 Wi‑Fi</td><td class="ok">◎</td><td>LAN内で直接（host候補）。インターネットが不安定でも通信自体は LAN 内で完結</td></tr>
+<tr><td>片方のスマホのテザリングに、もう片方が接続</td><td class="ok">○</td><td>同じLANになる。Wi‑Fiがない場所での推奨手段（実機での確認を推奨）</td></tr>
+<tr><td>別々のモバイル回線／別々のWi‑Fi</td><td class="mid">△</td><td>STUN で外向きアドレスを交換してつながることが多い。キャリアのNAT方式によっては失敗 → TURN（中継）が必要</td></tr>
+<tr><td>公衆Wi‑Fi・ホテル・会社のゲストWi‑Fi</td><td class="ng">×になりやすい</td><td>端末どうしの通信を禁止（APアイソレーション）していることが多い → テザリングに切り替える</td></tr>
+<tr><td>VPN・一部のセキュリティアプリ使用中</td><td class="mid">△</td><td>UDP が遮断されるとつながらない。オフにして再試行</td></tr>
+</table>
+<div class="box warn">ページ自体は最初にインターネットから読み込む必要がある（Service Worker によるオフライン化は未実装）。一度開いた後の通信は、同じLAN内なら外部に出ない。</div>
+
+<h2>6. 別リポジトリへの流用手順</h2>
+<h3>6.1 コピーするもの</h3>
+<table><tr><th style="width:38%">ファイル（付録）</th><th>内容</th><th style="width:16%">依存</th></tr>
+<tr><td><code>p2p/signal.ts</code>（付録A）</td><td>接続コードのエンコード／デコード</td><td>なし</td></tr>
+<tr><td><code>p2p/peer.ts</code>（付録B）</td><td>WebRTC 接続・送受信・経路判定（Peer クラス）</td><td>signal.ts</td></tr>
+<tr><td><code>QrCode.tsx</code> / <code>QrScanner.tsx</code>（付録C）</td><td>React 用の QR 表示・カメラ読取（React 以外は 7.3 のバニラ版）</td><td>qrcode, jsqr</td></tr>
+</table>
+<pre class="code">npm install qrcode jsqr
+npm install -D @types/qrcode   # TypeScript の場合</pre>
+<h3>6.2 GitHub Pages で配信する</h3>
+<ol>
+<li>ビルド結果が静的ファイルになる構成にする（Vite ならそのまま <code>dist/</code>、Next.js は <code>output: "export"</code>）。</li>
+<li>リポジトリ名のサブパス（<code>https://ユーザー.github.io/リポジトリ/</code>）で配信されるので、ベースパスを設定する（Vite: <code>base: "/リポジトリ/"</code>、Next.js: <code>basePath</code>。本構成では環境変数 <code>NEXT_PUBLIC_BASE_PATH</code> で渡す）。manifest の <code>start_url</code>・アイコンのパスにも付ける。</li>
+<li><code>.github/workflows/deploy-pages.yml</code>（付録D）を置き、ビルド出力フォルダ（<code>out</code> / <code>dist</code>）と対象ブランチを合わせる。</li>
+<li>GitHub の <b>Settings → Pages → Source を「GitHub Actions」</b>にする（最初の1回だけ・管理者のみ）。未設定だと deploy が <code>404 Ensure GitHub Pages has been enabled</code> で失敗する。</li>
+<li>公開リポジトリなら無料。非公開リポジトリの Pages は有料プランが必要（その場合は Vercel / Netlify / Cloudflare Pages が無料で代替可）。</li>
+</ol>
+<h3>6.3 チェックリスト</h3>
+<ul>
+<li>HTTPS で配信している（カメラ <code>getUserMedia</code> と <code>CompressionStream</code> のため。localhost は例外的に可）</li>
+<li><code>&lt;video playsInline muted&gt;</code> を付けている（iPhone でインライン再生させるため）</li>
+<li>カメラ拒否時・QR が読めない時のテキスト入力の逃げ道がある</li>
+<li>画面遷移しても <code>Peer</code> インスタンスが破棄されない場所（アプリ全体の状態・Context 等）に置いている</li>
+<li>切断（<code>onClose</code>）時の表示と「最初からやり直す」導線がある</li>
+</ul>
+
+<h2>7. API リファレンス</h2>
+<h3>7.1 Peer クラス（付録B）</h3>
+<table><tr><th style="width:36%">メソッド</th><th>説明</th></tr>
+<tr><td><code>new Peer({ onOpen, onMessage, onClose }, iceServers?)</code></td><td>接続を1本作る。<code>onMessage</code> には JSON.parse 済みの値が来る。iceServers 省略時は Google の公開STUN</td></tr>
+<tr><td><code>createOffer(): Promise&lt;string&gt;</code></td><td>ホスト用。DataChannel を作り、接続コード①を返す</td></tr>
+<tr><td><code>answerOffer(code): Promise&lt;string&gt;</code></td><td>ゲスト用。①を受け取り、返事の接続コード②を返す</td></tr>
+<tr><td><code>acceptAnswer(code): Promise&lt;void&gt;</code></td><td>ホスト用。②を受け取る。成功すると両者で <code>onOpen</code></td></tr>
+<tr><td><code>send(data): boolean</code></td><td>JSON にして送る。未接続なら false</td></tr>
+<tr><td><code>route(): Promise&lt;"LAN"|"INTERNET"|"RELAY"|"UNKNOWN"&gt;</code></td><td>実際に使われている経路（getStats の選択中候補ペアから判定）</td></tr>
+<tr><td><code>close()</code></td><td>切断</td></tr></table>
+<h3>7.2 使い方</h3><pre class="code">import { Peer } from &quot;./p2p/peer&quot;;          // 付録A・Bのファイル
+import QRCode from &quot;qrcode&quot;;
+import jsQR from &quot;jsqr&quot;;
+
+// ---- ホスト ----
+const host = new Peer({
+  onOpen:    () =&gt; console.log(&quot;つながった&quot;),
+  onMessage: (msg) =&gt; console.log(&quot;受信&quot;, msg),
+  onClose:   () =&gt; console.log(&quot;切れた&quot;),
+});
+const offer = await host.createOffer();              // &quot;TS1.xxxx&quot;（約530文字）
+await QRCode.toCanvas(document.querySelector(&quot;canvas&quot;), offer, { errorCorrectionLevel: &quot;L&quot;, margin: 2 });
+// …ゲストの返事QRをカメラで読んだら:
+await host.acceptAnswer(answerText);
+
+// ---- ゲスト ----
+const guest = new Peer({ onOpen, onMessage, onClose });
+const answer = await guest.answerOffer(offerText);   // ホストのQRを読んだ文字列
+await QRCode.toCanvas(canvas, answer, { errorCorrectionLevel: &quot;L&quot;, margin: 2 });
+
+// ---- つながった後 ----
+host.send({ t: &quot;move&quot;, seq: 1, row: 2, col: 3 });   // JSON で送受信
+console.log(await host.route());                     // &quot;LAN&quot; | &quot;INTERNET&quot; | &quot;RELAY&quot;</pre>
+<h3>7.3 フレームワークなしのQR読み取り</h3><pre class="code">// フレームワークなしのカメラ読み取り（React版は付録C）
+async function scanQr(video, onResult) {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: &quot;environment&quot;, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+  video.srcObject = stream; video.playsInline = true; video.muted = true; await video.play();
+  const c = document.createElement(&quot;canvas&quot;), ctx = c.getContext(&quot;2d&quot;, { willReadFrequently: true });
+  const timer = setInterval(() =&gt; {
+    if (!video.videoWidth) return;
+    c.width = video.videoWidth; c.height = video.videoHeight; ctx.drawImage(video, 0, 0);
+    const img = ctx.getImageData(0, 0, c.width, c.height);
+    const r = jsQR(img.data, img.width, img.height, { inversionAttempts: &quot;dontInvert&quot; });
+    if (r?.data) { clearInterval(timer); stream.getTracks().forEach(t =&gt; t.stop()); onResult(r.data); }
+  }, 150);
+}</pre>
+
+<h2>8. ゲーム通信の設計パターン</h2>
+<ul>
+<li><b>ホスト権威型</b>にする: ゲーム状態はホストだけが持つ。ゲストは「ここに置きたい」等の意図だけ送り、ホストが合法性を判定して<b>状態まるごと</b>を返す。ずれ・二重操作が起きない。ターン制ゲームなら状態は数KB以下で十分速い（実測 往復1〜2ms、LAN）。</li>
+<li>ゲームロジックは UI から分離した純粋関数（<code>reduce(state, action)</code>）にし、ホスト・ゲストで同じコードを使う（トークセロの <code>src/engine</code> と同じ考え方）。</li>
+<li>メッセージには種類 <code>t</code>・連番 <code>seq</code>・接続直後に<b>プロトコル版 <code>v</code></b> を入れる。版が違えば「アプリを再読み込みしてね」と表示する。</li>
+<li>DataChannel は <code>ordered: true</code>（既定で再送あり）なので、ターン制なら到着順・欠落を自分で扱う必要はない。</li>
+<li>乱数（シャッフル等）はホストだけが引き、結果を状態として配る。</li>
+<li>3人以上: ホストが各ゲストと1本ずつ接続するスター型にする（ゲストごとにQR交換が必要）。</li>
+</ul>
+<pre class="code">// ホスト権威型: 状態はホストだけが持ち、ゲストは「やりたいこと」だけ送る
+type ToHost  = { t: &quot;hello&quot;; v: 1; name: string }            // 接続直後にバージョン確認
+             | { t: &quot;intent&quot;; seq: number; action: Action };  // 例: { kind: &quot;place&quot;, row, col }
+type ToGuest = { t: &quot;welcome&quot;; v: 1; you: &quot;WHITE&quot; }
+             | { t: &quot;state&quot;; seq: number; state: GameState }  // 毎回まるごと送る（数KB以下なら十分速い）
+             | { t: &quot;reject&quot;; seq: number; reason: string };
+
+// ホスト側
+peer = new Peer({ onMessage: (m) =&gt; {
+  if (m.t === &quot;intent&quot; &amp;&amp; isLegal(state, &quot;WHITE&quot;, m.action)) {
+    state = reduce(state, m.action);           // ゲームロジックは両端で同じものを使う
+    render(state); peer.send({ t: &quot;state&quot;, seq: m.seq, state });
+  } else if (m.t === &quot;intent&quot;) peer.send({ t: &quot;reject&quot;, seq: m.seq, reason: &quot;illegal&quot; });
+}});</pre>
+
+<h2>9. 検証結果（2026年9月27日）</h2>
+<table><tr><th>検証</th><th>環境</th><th>結果</th></tr>
+<tr><td>接続コード エンコード／デコード・破損検出</td><td>Vitest（Node 22）</td><td class="ok">3件合格</td></tr>
+<tr><td>テキストコードで接続・双方向送受信</td><td>別プロセスの Chromium 2つ（Pixel 7 / iPhone 14 のエミュレーション）</td><td class="ok">接続・5回と3回の送信がすべて到達・往復1〜2ms・経路 LAN</td></tr>
+<tr><td>カメラでQRを読んで接続（擬似カメラに相手画面のQRを映す）</td><td>同上（Chromium の擬似カメラ機能）</td><td class="ok">読取→返事作成 約1.0秒、読取→接続完了 約0.9秒</td></tr>
+<tr><td>公開URL（GitHub Pages・HTTPS）で同じ試験</td><td>同上</td><td class="ok">接続・送受信OK</td></tr>
+<tr><td>GitHub Actions でビルド→Pages 公開</td><td>GitHub</td><td class="ok">成功</td></tr>
+<tr><td>実機（Android⇔iPhone）・実カメラでの読みやすさ</td><td>—</td><td class="mid">未検証（要実機確認）</td></tr>
+<tr><td>別回線（STUN経由）・テザリング</td><td>—</td><td class="mid">未検証（検証環境から STUN に到達できず）</td></tr>
+</table>
+<p>実機での確認手順: 2台で <code>https://muaaaa849.github.io/othelo/link/</code> を開く → 片方「ホストになる」、もう片方「ゲストになる」→ QRを読み合う → 表示される「経路」と「相手の画面を光らせる」で確認。</p>
+
+<h2>10. 制約・拡張のしかた</h2>
+<table><tr><th style="width:28%">課題</th><th>対応</th></tr>
+<tr><td>別回線でつながらない</td><td>TURN サーバーを <code>iceServers</code> に追加（Cloudflare Calls / Twilio / Metered 等。多くは有料・認証情報の発行が必要）。静的サイトに固定の認証情報を置くと悪用されるので、短期トークンを発行する仕組みが要る</td></tr>
+<tr><td>QRを2回読むのが面倒</td><td>シグナリングだけ外部に任せる（PeerJS 公開サーバー・Firebase Realtime Database 等）→ 4〜6桁の部屋コード入力で接続。代わりに外部サービス依存になる</td></tr>
+<tr><td>途中で切れた</td><td>最小構成では再接続なし。状態をホストが保持しているので、QRを読み直して新しい接続を作り、ホストが最新状態を送り直せば再開できる</td></tr>
+<tr><td>QRが細かく読みにくい</td><td>画面を明るく・画面幅いっぱいに表示。改善するなら SDP を必要項目だけに絞る方式（4章末）</td></tr>
+<tr><td>オフラインで起動したい</td><td>Service Worker でアプリをキャッシュ（PWA化）。フォントも同梱する</td></tr>
+<tr><td>Bluetooth で近くの人を自動検出したい</td><td>Web では不可。ネイティブアプリ化（Capacitor 等＋各OSの近距離通信API）が必要</td></tr>
+</table>
+
+<h3>参考</h3>
+<ul style="font-size:9pt">
+<li>MDN: Web Bluetooth API ／ WebBluetoothCG implementation-status.md（ブラウザは GATT クライアントのみ・広告/ペリフェラル非対応）</li>
+<li>WebKit Bug 101034（Safari は Web Bluetooth 非対応）／ caniuse: Web Bluetooth</li>
+<li>magarcia/qwbp: Serverless WebRTC signaling via QR codes ／ franklinta.com: Serverless WebRTC using QR codes</li>
+</ul>
+
+<div class="page-break"></div>
+<h2>付録A　src/lib/p2p/signal.ts</h2><pre class="code">/**
+ * WebRTC の接続情報（SDP）を QR コード / テキストで受け渡すための圧縮エンコード。
+ * 形式: &quot;TS1.&quot; + base64url(deflate-raw(JSON {t, s}))
+ */
+
+const PREFIX = &quot;TS1.&quot;;
+
+export type Signal = { type: &quot;offer&quot; | &quot;answer&quot;; sdp: string };
+
+/** データチャネルだけの接続に不要な行を落として短くする */
+export function slimSdp(sdp: string): string {
+  const drop = [/^a=extmap-allow-mixed/, /^a=msid-semantic/, /^a=max-message-size/];
+  return sdp
+    .split(/\r?\n/)
+    .filter((l) =&gt; l &amp;&amp; !drop.some((re) =&gt; re.test(l)))
+    .join(&quot;\r\n&quot;)
+    .concat(&quot;\r\n&quot;);
+}
+
+async function pipe(data: Uint8Array, stream: CompressionStream | DecompressionStream): Promise&lt;Uint8Array&gt; {
+  const out = new Blob([data as BlobPart]).stream().pipeThrough(stream);
+  return new Uint8Array(await new Response(out).arrayBuffer());
+}
+
+function toBase64Url(bytes: Uint8Array): string {
+  let bin = &quot;&quot;;
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, &quot;-&quot;).replace(/\//g, &quot;_&quot;).replace(/=+$/, &quot;&quot;);
+}
+
+function fromBase64Url(s: string): Uint8Array {
+  const b64 = s.replace(/-/g, &quot;+&quot;).replace(/_/g, &quot;/&quot;);
+  const bin = atob(b64 + &quot;=&quot;.repeat((4 - (b64.length % 4)) % 4));
+  return Uint8Array.from(bin, (c) =&gt; c.charCodeAt(0));
+}
+
+export async function encodeSignal(sig: Signal): Promise&lt;string&gt; {
+  const json = JSON.stringify({ t: sig.type === &quot;offer&quot; ? &quot;o&quot; : &quot;a&quot;, s: slimSdp(sig.sdp) });
+  const packed = await pipe(new TextEncoder().encode(json), new CompressionStream(&quot;deflate-raw&quot;));
+  return PREFIX + toBase64Url(packed);
+}
+
+export class SignalFormatError extends Error {}
+
+export async function decodeSignal(code: string): Promise&lt;Signal&gt; {
+  const s = code.trim();
+  if (!s.startsWith(PREFIX)) throw new SignalFormatError(&quot;接続コードの形式が違います&quot;);
+  try {
+    const bytes = await pipe(fromBase64Url(s.slice(PREFIX.length)), new DecompressionStream(&quot;deflate-raw&quot;));
+    const { t, s: sdp } = JSON.parse(new TextDecoder().decode(bytes)) as { t: string; s: string };
+    if ((t !== &quot;o&quot; &amp;&amp; t !== &quot;a&quot;) || typeof sdp !== &quot;string&quot; || !sdp.startsWith(&quot;v=0&quot;)) throw new Error();
+    return { type: t === &quot;o&quot; ? &quot;offer&quot; : &quot;answer&quot;, sdp };
+  } catch {
+    throw new SignalFormatError(&quot;接続コードを読み取れませんでした&quot;);
+  }
+}
+</pre>
+<h2>付録B　src/lib/p2p/peer.ts</h2><pre class="code">import { type Signal, decodeSignal, encodeSignal } from &quot;./signal&quot;;
+
+/**
+ * スマホ2台を WebRTC DataChannel で直接つなぐ。
+ * シグナリングサーバーは使わず、接続コード（QR）を2回やりとりする:
+ *   ホスト: createOffer → 相手に見せる → 相手の答えを acceptAnswer
+ *   ゲスト: 相手のコードで answerOffer → 自分の答えを相手に見せる
+ * STUN はインターネット経由（別々の回線）でもつながるようにするため。同じWi‑Fiなら不要。
+ */
+export const ICE_SERVERS: RTCIceServer[] = [{ urls: &quot;stun:stun.l.google.com:19302&quot; }];
+const GATHER_TIMEOUT_MS = 4000;
+
+export type RouteKind = &quot;LAN&quot; | &quot;INTERNET&quot; | &quot;RELAY&quot; | &quot;UNKNOWN&quot;;
+
+export type PeerEvents = {
+  onOpen: () =&gt; void;
+  onMessage: (data: unknown) =&gt; void;
+  onClose: () =&gt; void;
+};
+
+/** 候補を集め終わるまで待つ（コードを1回で渡すため、trickle しない） */
+function waitGathering(pc: RTCPeerConnection): Promise&lt;void&gt; {
+  if (pc.iceGatheringState === &quot;complete&quot;) return Promise.resolve();
+  return new Promise((resolve) =&gt; {
+    const done = () =&gt; {
+      clearTimeout(timer);
+      pc.removeEventListener(&quot;icegatheringstatechange&quot;, check);
+      resolve();
+    };
+    const check = () =&gt; pc.iceGatheringState === &quot;complete&quot; &amp;&amp; done();
+    const timer = setTimeout(done, GATHER_TIMEOUT_MS);
+    pc.addEventListener(&quot;icegatheringstatechange&quot;, check);
+  });
+}
+
+export class Peer {
+  readonly pc: RTCPeerConnection;
+  private channel: RTCDataChannel | null = null;
+
+  constructor(private events: PeerEvents, iceServers: RTCIceServer[] = ICE_SERVERS) {
+    this.pc = new RTCPeerConnection({ iceServers });
+    this.pc.addEventListener(&quot;datachannel&quot;, (e) =&gt; this.bind(e.channel));
+    this.pc.addEventListener(&quot;connectionstatechange&quot;, () =&gt; {
+      if (this.pc.connectionState === &quot;failed&quot; || this.pc.connectionState === &quot;closed&quot;) this.events.onClose();
+    });
+  }
+
+  private bind(ch: RTCDataChannel) {
+    this.channel = ch;
+    ch.addEventListener(&quot;open&quot;, () =&gt; this.events.onOpen());
+    ch.addEventListener(&quot;close&quot;, () =&gt; this.events.onClose());
+    ch.addEventListener(&quot;message&quot;, (e) =&gt; {
+      try {
+        this.events.onMessage(JSON.parse(e.data as string));
+      } catch {
+        // 壊れたメッセージは無視
+      }
+    });
+  }
+
+  private async localCode(): Promise&lt;string&gt; {
+    await waitGathering(this.pc);
+    const d = this.pc.localDescription!;
+    return encodeSignal({ type: d.type as Signal[&quot;type&quot;], sdp: d.sdp });
+  }
+
+  /** ホスト: 最初の接続コードを作る */
+  async createOffer(): Promise&lt;string&gt; {
+    this.bind(this.pc.createDataChannel(&quot;game&quot;, { ordered: true }));
+    await this.pc.setLocalDescription(await this.pc.createOffer());
+    return this.localCode();
+  }
+
+  /** ゲスト: ホストのコードから返事のコードを作る */
+  async answerOffer(code: string): Promise&lt;string&gt; {
+    const sig = await decodeSignal(code);
+    if (sig.type !== &quot;offer&quot;) throw new Error(&quot;ホストの接続コードを読み取ってね&quot;);
+    await this.pc.setRemoteDescription(sig);
+    await this.pc.setLocalDescription(await this.pc.createAnswer());
+    return this.localCode();
+  }
+
+  /** ホスト: ゲストの返事を受け取ってつなぐ */
+  async acceptAnswer(code: string): Promise&lt;void&gt; {
+    const sig = await decodeSignal(code);
+    if (sig.type !== &quot;answer&quot;) throw new Error(&quot;ゲストの返事のコードを読み取ってね&quot;);
+    await this.pc.setRemoteDescription(sig);
+  }
+
+  send(data: unknown): boolean {
+    if (this.channel?.readyState !== &quot;open&quot;) return false;
+    this.channel.send(JSON.stringify(data));
+    return true;
+  }
+
+  /** 実際に使われている経路（同じネットワーク内 / インターネット経由 / 中継） */
+  async route(): Promise&lt;RouteKind&gt; {
+    const stats = await this.pc.getStats();
+    let pairId: string | undefined;
+    stats.forEach((s) =&gt; {
+      if (s.type === &quot;transport&quot; &amp;&amp; s.selectedCandidatePairId) pairId = s.selectedCandidatePairId;
+    });
+    let pair: RTCIceCandidatePairStats | undefined;
+    stats.forEach((s) =&gt; {
+      if (s.type === &quot;candidate-pair&quot; &amp;&amp; (s.id === pairId || (!pairId &amp;&amp; s.nominated &amp;&amp; s.state === &quot;succeeded&quot;))) pair = s;
+    });
+    if (!pair) return &quot;UNKNOWN&quot;;
+    const local = stats.get(pair.localCandidateId) as { candidateType?: string } | undefined;
+    const remote = stats.get(pair.remoteCandidateId) as { candidateType?: string } | undefined;
+    const types = [local?.candidateType, remote?.candidateType];
+    if (types.includes(&quot;relay&quot;)) return &quot;RELAY&quot;;
+    // 両端がローカルのアドレスなら同じネットワーク内、どちらかがルーター越し（srflx）ならインターネット経由
+    return types.every((t) =&gt; t === &quot;host&quot; || t === &quot;prflx&quot;) ? &quot;LAN&quot; : &quot;INTERNET&quot;;
+  }
+
+  close() {
+    this.channel?.close();
+    this.pc.close();
+  }
+}
+</pre>
+<h2>付録C　React 用 QR 部品</h2>
+<h3>src/components/QrCode.tsx</h3><pre class="code">&quot;use client&quot;;
+
+import QRCode from &quot;qrcode&quot;;
+import { useEffect, useRef, useState } from &quot;react&quot;;
+
+/** 接続コードを QR で表示する（白地・余白付きで読み取りやすく） */
+export function QrCode({ text }: { text: string }) {
+  const canvas = useRef&lt;HTMLCanvasElement&gt;(null);
+  // 細かいQRなので、カメラで読みやすいよう画面幅いっぱいまで大きくする
+  const [size, setSize] = useState(280);
+  useEffect(() =&gt; setSize(Math.min(window.innerWidth, 480) - 32), []);
+  useEffect(() =&gt; {
+    if (!canvas.current) return;
+    QRCode.toCanvas(canvas.current, text, { errorCorrectionLevel: &quot;L&quot;, margin: 2, width: size }).catch(() =&gt; {});
+  }, [text, size]);
+  return &lt;canvas ref={canvas} data-qr className=&quot;mx-auto rounded-xl bg-white&quot; style={{ width: size, height: size }} /&gt;;
+}
+</pre>
+<h3>src/components/QrScanner.tsx</h3><pre class="code">&quot;use client&quot;;
+
+import jsQR from &quot;jsqr&quot;;
+import { useEffect, useRef, useState } from &quot;react&quot;;
+
+const SCAN_INTERVAL_MS = 150;
+
+/** カメラで QR を読み取る。読めたら onResult を1回だけ呼ぶ */
+export function QrScanner({ onResult }: { onResult: (text: string) =&gt; void }) {
+  const video = useRef&lt;HTMLVideoElement&gt;(null);
+  const [error, setError] = useState&lt;string | null&gt;(null);
+  const done = useRef(false);
+
+  useEffect(() =&gt; {
+    let stream: MediaStream | null = null;
+    let timer: ReturnType&lt;typeof setInterval&gt; | null = null;
+    const canvas = document.createElement(&quot;canvas&quot;);
+    const ctx = canvas.getContext(&quot;2d&quot;, { willReadFrequently: true });
+
+    (async () =&gt; {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: &quot;environment&quot;, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false,
+        });
+      } catch {
+        setError(&quot;カメラを使えませんでした。ブラウザのカメラ許可を確認するか、下のコード入力を使ってね&quot;);
+        return;
+      }
+      const v = video.current;
+      if (!v) return;
+      v.srcObject = stream;
+      await v.play().catch(() =&gt; {});
+      timer = setInterval(() =&gt; {
+        if (done.current || !ctx || v.videoWidth === 0) return;
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        ctx.drawImage(v, 0, 0);
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(img.data, img.width, img.height, { inversionAttempts: &quot;dontInvert&quot; });
+        if (code?.data) {
+          done.current = true;
+          onResult(code.data);
+        }
+      }, SCAN_INTERVAL_MS);
+    })();
+
+    return () =&gt; {
+      if (timer) clearInterval(timer);
+      stream?.getTracks().forEach((t) =&gt; t.stop());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (error) return &lt;p className=&quot;rounded-xl bg-bg p-4 text-note text-[#FF8A8D]&quot;&gt;{error}&lt;/p&gt;;
+  return (
+    &lt;div className=&quot;relative mx-auto aspect-square w-full max-w-[320px] overflow-hidden rounded-2xl bg-black&quot;&gt;
+      &lt;video ref={video} playsInline muted className=&quot;h-full w-full object-cover&quot; /&gt;
+      &lt;div className=&quot;pointer-events-none absolute inset-[15%] rounded-xl border-2 border-gold/80&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+</pre>
+<p style="font-size:9pt">※ Tailwind のクラス名（<code>className</code>）は見た目のためだけ。他の CSS に置き換えてよい。</p>
+<h2>付録D　.github/workflows/deploy-pages.yml</h2>
+<pre class="code">name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [&quot;claude/pdf-review-before-dev-jwyd3k&quot;, &quot;main&quot;]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - name: Build (static export)
+        run: npm run build
+        env:
+          # https://&lt;owner&gt;.github.io/&lt;repo&gt;/ で配信するためのサブパス
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+</pre>
+<p style="font-size:9pt">Vite 等の場合: <code>npm run build</code> の出力先に合わせて <code>path: dist</code> に変更し、ベースパスは <code>vite build --base=/${{ github.event.repository.name }}/</code> などで渡す。<code>branches</code> は公開したいブランチに合わせる。</p>
+</body></html>
